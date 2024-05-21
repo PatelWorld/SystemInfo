@@ -1,16 +1,19 @@
 <?php
 
+/**
+ * This is Disk class to fetch the details about Physical disk as well as logical disk
+ * 
+ * @author Mukesh Patel <mukesh_gam_m@yahoo.com>
+ * 
+ */
+
+
 declare(strict_types=1);
 
 namespace PatelWorld\SystemInfo;
 
 class SysInfo
 {
-    public function __construct()
-    {
-        echo PHP_OS;
-    }
-
     public static function commandOutput($command)
     {
         exec($command, $lines);
@@ -23,7 +26,7 @@ class SysInfo
         $currentItem = [];
 
         // Split the output into lines
-        print_r($wmicOutput);
+        // print_r($wmicOutput);
         // $lines = explode(PHP_EOL, $wmicOutput);
 
         foreach ($wmicOutput as $line) {
@@ -38,7 +41,7 @@ class SysInfo
             } else {
                 // Split the line into key and value
                 list($key, $value) = explode('=', $line, 2);
-                $currentItem[$key] = $value;
+                $currentItem[$key] = trim($value);
             }
         }
 
@@ -50,20 +53,8 @@ class SysInfo
         return $result;
     }
 
-    public static function toCamelCase($string)
+    public static function result($cmd)
     {
-        // Remove any non-alphanumeric characters (including spaces)
-        $string = preg_replace('/[^a-zA-Z0-9]+/', ' ', $string);
-
-        // Convert the string to lowercase and then capitalize each word
-        $string = ucwords(strtolower($string));
-
-        // Remove spaces
-        $string = str_replace(' ', '', $string);
-
-        // Lowercase the first character
-        $string = lcfirst($string);
-
-        return $string;
+        return self::parseWmicOutput(self::commandOutput($cmd));
     }
 }
