@@ -17,58 +17,61 @@ use PatelWorld\SystemInfo\SysInfo;
 
 class DiskDrive extends SysInfo
 {
+    private static string $componentName = 'diskdrive';
     public static function diskCount(): int
     {
-        return count(array_filter(parent::commandOutput("wmic diskdrive get deviceid /format:list"), function ($r) {
+        // return parent::result();
+        return count(array_filter(parent::commandOutput(parent::prepCmd(self::$componentName, ["deviceid"])), function ($r) {
             return !empty($r);
         }));
     }
 
     public static function details()
     {
-        return parent::parseWmicOutput(parent::commandOutput("wmic diskdrive list /format:list"));
+        return parent::result(parent::prepCmd(self::$componentName));
     }
 
     public static function getModel()
     {
         return array_map(function ($r) {
             return $r['Model'];
-        }, parent::parseWmicOutput(parent::commandOutput("WMIC diskdrive get Model /format:list")));
+        }, parent::result(parent::prepCmd(self::$componentName, ["Model"])));
     }
 
     public static function getSerialNumber()
     {
         return array_map(function ($r) {
             return $r['SerialNumber'];
-        }, parent::result("WMIC diskdrive get SerialNumber /format:list"));
+        }, parent::result(parent::prepCmd(self::$componentName, ["SerialNumber"])));
     }
 
     public static function getSize()
     {
-        return parent::result("WMIC diskdrive get Size /format:list");
+        return parent::parseResult(self::$componentName, "Size");
     }
 
     public static function getPartitionsCount()
     {
-        return parent::result("WMIC diskdrive get Partitions /format:list");
+        return parent::parseResult(self::$componentName, "Partitions");
     }
     public static function getManufacturer()
     {
-        return parent::result("WMIC diskdrive get Caption /format:list");
+        return parent::parseResult(self::$componentName, "Caption");
     }
 
     public static function getDiskDetails()
     {
-        return parent::result("wmic logicaldisk get DeviceID,VolumeName,FileSystem,Size,FreeSpace /format:list");
+        return parent::result(parent::prepCmd("logicaldisk", ["DeviceID", "VolumeName", "FileSystem", "Size", "FreeSpace"]));
     }
 
     public static function getWindowDiskDetails()
     {
-        $windowsDrive = parent::result("WMIC os get SystemDrive /format:list");
-        if (count($windowsDrive) > 0 && isset($windowsDrive[0]['SystemDrive'])) {
-            $windowsDrive = $windowsDrive[0]['SystemDrive'];
-        }
+        $windowsDrive = parent::parseResult("os", "SystemDrive");
+        return parent::result("wmic logicaldisk where \"DeviceID='$windowsDrive[0]'\" get DeviceID,VolumeName,FileSystem,Size,FreeSpace /format:list")[0];
+    }
 
-        return parent::result("wmic logicaldisk where \"DeviceID='$windowsDrive'\" get DeviceID,VolumeName,FileSystem,Size,FreeSpace /format:list")[0];
+    public static function getAttributes(array $attrName = [])
+    {
+        return parent::getCustom(self::$componentName, $attrName);
     }
 }

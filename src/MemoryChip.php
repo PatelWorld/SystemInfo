@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is Disk class to fetch the details about Physical disk as well as logical disk
+ * This is MemoryChip class to fetch the details about Physical MemoryChip
  * 
  * @author Mukesh Patel <mukesh_gam_m@yahoo.com>
  * 
@@ -17,54 +17,62 @@ use PatelWorld\SystemInfo\SysInfo;
 
 class MemoryChip extends SysInfo
 {
-  public static function diskCount(): int
-  {
-    return count(array_filter(parent::commandOutput("wmic diskdrive get deviceid /format:list"), function ($r) {
-      return !empty($r);
-    }));
-  }
+  private static string $componentName = 'memorychip';
+  public static array $possibleValues = [
+    "Attributes",
+    "BankLabel",
+    "Capacity",
+    "Caption",
+    "ConfigManagerErrorCode",
+    "ConfigManagerUserConfig",
+    "CreationClassName",
+    "DataWidth",
+    "Description",
+    "DeviceLocator",
+    "FormFactor",
+    "HotSwappable",
+    "InstallDate",
+    "InterleaveDataDepth",
+    "InterleavePosition",
+    "Manufacturer",
+    "MaxVoltage",
+    "MemoryType",
+    "MinVoltage",
+    "Model",
+    "Name",
+    "OtherIdentifyingInfo",
+    "PartNumber",
+    "PositionInRow",
+    "PoweredOn",
+    "Removable",
+    "Replaceable",
+    "SerialNumber",
+    "SKU",
+    "SMBIOSMemoryType",
+    "Speed",
+    "Status",
+    "Tag",
+    "TotalWidth",
+    "TypeDetail",
+    "Version",
+  ];
 
   public static function details()
   {
-    return parent::parseWmicOutput(parent::commandOutput("WMIC cpu get /format:list"));
-  }
-
-  public static function getModel()
-  {
-    return parent::parseWmicOutput(parent::commandOutput("WMIC diskdrive get Model /format:list"));
-  }
-
-  public static function getSerialNumber()
-  {
-    return parent::result("WMIC diskdrive get SerialNumber /format:list");
+    return parent::result(parent::prepCmd(self::$componentName));
   }
 
   public static function getSize()
   {
-    return parent::result("WMIC diskdrive get Size /format:list");
+    return parent::parseResult(self::$componentName, "Capacity");
+  }
+  public static function getPartNumber()
+  {
+    return parent::parseResult(self::$componentName, "PartNumber");
   }
 
-  public static function getPartitionsCount()
+  public static function getAttributes(array $attrName = [])
   {
-    return parent::result("WMIC diskdrive get Partitions /format:list");
-  }
-  public static function getManufacturer()
-  {
-    return parent::result("WMIC diskdrive get Caption /format:list");
-  }
-
-  public static function getDiskDetails()
-  {
-    return parent::result("wmic logicaldisk get DeviceID,VolumeName,FileSystem,Size,FreeSpace /format:list");
-  }
-
-  public static function getWindowDiskDetails()
-  {
-    $windowsDrive = parent::result("WMIC os get SystemDrive /format:list");
-    if (count($windowsDrive) > 0 && isset($windowsDrive[0]['SystemDrive'])) {
-      $windowsDrive = $windowsDrive[0]['SystemDrive'];
-    }
-
-    return parent::result("wmic logicaldisk where \"DeviceID='$windowsDrive'\" get DeviceID,VolumeName,FileSystem,Size,FreeSpace /format:list")[0];
+    return parent::getCustom(self::$componentName, $attrName);
   }
 }
