@@ -1,7 +1,7 @@
 {
-    "name": "patelworld/systeminfo",
-    "description": "To fetch system related information such as RAM, Disk, Drive, Motherboard e.t.c.",
+    "name": "patelworld/system-info",
     "type": "library",
+    "description": "To fetch system related information such as RAM, Disk, Drive, Motherboard e.t.c.",
     "license": "MIT",
     "autoload": {
         "psr-4": {
