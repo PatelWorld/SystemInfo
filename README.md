@@ -32,7 +32,7 @@ System Info is a PHP library that gives the system related information based on 
 ## Installation
 
 ```bash
-composer require patelworld/system-info
+composer require patelworld/systeminfo
 ```
 
 ## Basic Usage

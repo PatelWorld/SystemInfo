@@ -1,5 +1,5 @@
 {
-    "name": "patelworld/system-info",
+    "name": "patelworld/systeminfo",
     "type": "library",
     "description": "To fetch system related information such as RAM, Disk, Drive, Motherboard e.t.c.",
     "license": "MIT",
